@@ -1,0 +1,7 @@
+# checkpoints (13.6 GB each) and run outputs stay out of git
+checkpoints/
+results/*
+!results/.gitkeep
+!results/summary.csv
+__pycache__/
+*.pyc

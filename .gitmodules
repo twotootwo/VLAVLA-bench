@@ -1,0 +1,3 @@
+[submodule "third_party/LAPA"]
+	path = third_party/LAPA
+	url = https://github.com/LatentActionPretraining/LAPA.git

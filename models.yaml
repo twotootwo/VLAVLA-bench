@@ -1,0 +1,29 @@
+# Checkpoints to evaluate. Each entry: HF repo + subfolder holding streaming_params.
+# All are LAPA-7B fine-tuned on SIMPLER (Bridge) rollouts; training logs sit next to the params.
+# To add a model: add one entry here, then `scripts/download.sh <name>`.
+
+base:
+  # Official LAPA release. Only tokenizer.model and vqgan are used from it
+  # (its params output latent actions, not robot actions, so it is not evaluated).
+  repo: latent-action-pretraining/LAPA-7B-openx
+  files: [tokenizer.model, vqgan]
+
+models:
+  e0:
+    repo: capstone-vlavla/lapa-checkpoints
+    subdir: e0
+  e2:
+    repo: capstone-vlavla/e2-checkpoints-for-test
+    subdir: e2
+  e3:
+    repo: capstone-vlavla/e3-checkpoints-for-test
+    subdir: e3
+  e2_340:
+    repo: capstone-vlavla/lapa-checkpoints-340
+    subdir: e2_340
+  e3_340:
+    repo: capstone-vlavla/lapa-checkpoints-340
+    subdir: e3_340
+  e2_340_s2:
+    repo: capstone-vlavla/lapa-final-e2-object-340
+    subdir: e2_340_s2
