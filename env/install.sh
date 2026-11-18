@@ -8,6 +8,7 @@ cd "$(dirname "$0")/.."
 ENV_NAME=${ENV_NAME:-lapa}
 
 git submodule update --init third_party/LAPA
+bash scripts/apply_patches.sh   # see patches/README.md
 
 eval "$(conda shell.bash hook)"
 conda create -n "$ENV_NAME" python=3.10 -y

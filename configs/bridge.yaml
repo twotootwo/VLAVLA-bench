@@ -8,7 +8,12 @@ common:
   control_freq: 5
   sim_freq: 500
   obj_variation_mode: episode
-  obj_episode_range: [0, 24]          # 24 episodes per task
+  obj_episode_range: [0, 24]          # all 24 official object placements per task
+  # Evaluation seeds (policy action sampling). Each seed reruns all 24 placements.
+  # With reseed_per_placement the RNG is reset to seed*1000+placement before each placement
+  # (patches/0001), so a placement's randomness does not depend on earlier placements.
+  eval_seeds: [1234, 1235, 1236, 1237, 1238]
+  reseed_per_placement: true
   robot_init_rot_quat_center: [0, 0, 0, 1]
   robot_init_rot_rpy_range: [0, 0, 1, 0, 0, 1, 0, 0, 1]
   load_llama_config: 7b

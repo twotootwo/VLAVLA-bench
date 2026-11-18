@@ -1,0 +1,81 @@
+diff --git a/SimplerEnv/simpler_env/evaluation/argparse.py b/SimplerEnv/simpler_env/evaluation/argparse.py
+index 23d7968..0298ef2 100644
+--- a/SimplerEnv/simpler_env/evaluation/argparse.py
++++ b/SimplerEnv/simpler_env/evaluation/argparse.py
+@@ -143,6 +143,11 @@ def get_args():
+     parser.add_argument("--tf-memory-limit", type=int, default=3072, help="Tensorflow memory limit")
+     parser.add_argument("--octo-init-rng", type=int, default=0, help="Octo init rng seed")
+ 
++    # VLAVLA-bench patch
++    parser.add_argument("--reseed-per-placement", action="store_true",
++                        help="reset the sampling RNG to seed*1000+placement before each object placement")
++    parser.add_argument("--episode-log", type=str, default=None,
++                        help="append one JSON record per object placement to this file")
+     args = parser.parse_args()
+ 
+     args.tokenizer = VideoLLaMAConfig.get_tokenizer_config()
+diff --git a/SimplerEnv/simpler_env/evaluation/maniskill2_evaluator.py b/SimplerEnv/simpler_env/evaluation/maniskill2_evaluator.py
+index 2ee3a4e..5674f6b 100644
+--- a/SimplerEnv/simpler_env/evaluation/maniskill2_evaluator.py
++++ b/SimplerEnv/simpler_env/evaluation/maniskill2_evaluator.py
+@@ -11,6 +11,11 @@ from simpler_env.utils.env.env_builder import build_maniskill2_env, get_robot_co
+ from simpler_env.utils.env.observation_utils import get_image_from_maniskill2_obs_dict
+ from simpler_env.utils.visualization import write_video
+ from PIL import Image
++import json  # VLAVLA-bench patch
++
++# VLAVLA-bench patch: stats of the last finished episode, read by maniskill2_evaluator()
++# to write one record per object placement.
++LAST_EPISODE = {}
+ 
+ def run_maniskill2_eval_single_episode(
+     model,
+@@ -140,6 +145,12 @@ def run_maniskill2_eval_single_episode(
+     episode_stats = info.get("episode_stats", {})
+     is_src_obj_grasped = episode_stats.get("is_src_obj_grasped", False)
+     is_src_obj_moved = episode_stats.get("moved_correct_obj", False)
++    LAST_EPISODE.clear()  # VLAVLA-bench patch
++    LAST_EPISODE.update(
++        steps=int(timestep),
++        truncated=bool(truncated),
++        episode_stats={k: (v.item() if hasattr(v, "item") else v) for k, v in episode_stats.items()},
++    )
+ 
+     # save video
+     env_save_name = env_name
+@@ -225,6 +236,14 @@ def maniskill2_evaluator(model, args):
+                             moved_arr.append(move_success)
+                 elif args.obj_variation_mode == "episode":
+                     for obj_episode_id in range(args.obj_episode_range[0], args.obj_episode_range[1]):
++                        # VLAVLA-bench patch: fix the policy's sampling RNG per object placement, so that
++                        # placement k always starts from the same random state regardless of how many
++                        # steps earlier placements used (comparable across models, rerunnable alone).
++                        placement_seed = None
++                        if getattr(args, "reseed_per_placement", False):
++                            from tux import set_random_seed
++                            placement_seed = args.seed * 1000 + obj_episode_id
++                            set_random_seed(placement_seed)
+                         final_success, grasp_success, move_success = run_maniskill2_eval_single_episode(
+                                 obj_episode_id=obj_episode_id,
+                                 **kwargs,
+@@ -232,6 +251,20 @@ def maniskill2_evaluator(model, args):
+                         success_arr.append(final_success)
+                         grasp_arr.append(grasp_success)
+                         moved_arr.append(move_success)
++                        # VLAVLA-bench patch: one record per placement
++                        if getattr(args, "episode_log", None):
++                            rec = dict(
++                                env_name=args.env_name,
++                                obj_episode_id=obj_episode_id,
++                                eval_seed=args.seed,
++                                placement_seed=placement_seed,
++                                success=bool(final_success),
++                                grasped=bool(grasp_success),
++                                moved=bool(move_success),
++                                **LAST_EPISODE,
++                            )
++                            with open(args.episode_log, "a") as f:
++                                f.write(json.dumps(rec) + "\n")
+                 else:
+                     raise NotImplementedError()
+ 
