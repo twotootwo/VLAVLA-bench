@@ -17,7 +17,10 @@ common:
   robot_init_rot_quat_center: [0, 0, 0, 1]
   robot_init_rot_rpy_range: [0, 0, 1, 0, 0, 1, 0, 0, 1]
   load_llama_config: 7b
-  update_llama_config: "dict(action_vocab_size=245,sample_mode='text',theta=50000000,max_sequence_length=32768,scan_attention=False,scan_query_chunk_size=128,scan_key_chunk_size=128,scan_mlp=False,scan_mlp_chunk_size=8192,scan_layers=True)"
+  # [5090] delta_vocab_size=8 added: the checkpoints were trained with delta_vocab_size=8
+  # (official finetune_simpler.sh, team e0.sh) but lapa_bridge.sh omits it, so the config default (32)
+  # mismatches the stored (8, 4096) delta embedding; flax 0.8 rejects that, flax 0.7 did not check.
+  update_llama_config: "dict(action_vocab_size=245,delta_vocab_size=8,sample_mode='text',theta=50000000,max_sequence_length=32768,scan_attention=False,scan_query_chunk_size=128,scan_key_chunk_size=128,scan_mlp=False,scan_mlp_chunk_size=8192,scan_layers=True)"
   tokens_per_action: 7
   tokens_per_delta: 4
 

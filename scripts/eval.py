@@ -81,7 +81,8 @@ def sh(cmd):
 
 def env_info():
     pkgs = {}
-    for p in ("jax", "jaxlib", "flax", "tensorflow", "sapien", "mani_skill2_real2sim", "simpler_env", "numpy", "torch"):
+    for p in ("jax", "jaxlib", "jax-cuda12-plugin", "flax", "optax", "chex", "transformers", "tensorflow",
+              "sapien", "gymnasium", "mani_skill2_real2sim", "simpler_env", "numpy", "imageio"):
         try:
             from importlib.metadata import version
             pkgs[p] = version(p)
@@ -91,6 +92,7 @@ def env_info():
         time=time.strftime("%Y-%m-%d %H:%M:%S"),
         host=platform.node(),
         cuda_visible_devices=os.environ.get("CUDA_VISIBLE_DEVICES"),
+        xla_flags=os.environ.get("XLA_FLAGS", "") + " --xla_gpu_enable_triton_gemm=false",
         gpu=sh("nvidia-smi --query-gpu=index,name,driver_version,memory.total --format=csv,noheader"),
         cuda=sh("nvcc --version | tail -1"),
         vulkan=sh("vulkaninfo --summary 2>/dev/null | grep -E 'apiVersion|deviceName|driverVersion' | head -6"),
@@ -132,6 +134,9 @@ def main():
     lo, hi = cfg["common"]["obj_episode_range"]
     placements = list(range(lo, hi))
     env = dict(os.environ, PYTHONPATH=f"{LAPA}:{SIMPLER}:{os.environ.get('PYTHONPATH', '')}")
+    # RTX 5090 (sm_120) with jax 0.4.33: XLA's Triton GEMM path aborts with
+    # "LLVM ERROR: Unsupported conversion from bf16 to f16"; route GEMMs to cuBLAS instead.
+    env["XLA_FLAGS"] = (env.get("XLA_FLAGS", "") + " --xla_gpu_enable_triton_gemm=false").strip()
     for task in a.task or list(cfg["tasks"]):
         for seed in a.eval_seed or cfg["common"]["eval_seeds"]:
             out = RESULTS_DIR / a.model / task / f"seed{seed}"

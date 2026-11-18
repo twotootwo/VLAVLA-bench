@@ -1,0 +1,53 @@
+# LAPA requirements for RTX 5090 (Blackwell, sm_120).
+# Base: third_party/LAPA/requirements.txt @46aca51. Changes are marked [5090].
+git+https://github.com/lhao499/tux.git
+# [5090] flax 0.7.0 / optax 0.1.7 / chex 0.1.82 need jax<0.4.25 (jax.config.define_bool_state);
+#        upgraded to the newest releases that still work with jax 0.4.33
+flax==0.8.5
+optax==0.2.3
+chex==0.1.87
+einops
+transformers==4.29.2
+datasets==2.13.0
+tqdm
+ml_collections
+wandb
+gcsfs
+requests
+typing-extensions
+sentencepiece
+Pillow
+ipdb
+imageio[ffmpeg]
+decord
+tiktoken
+# [5090] official jax[cuda12]==0.4.23 fails on sm_120 (also 0.4.28, 0.4.31):
+#   "ptxas fatal: Program with .target 'sm_90a' cannot be compiled to future architecture".
+#   0.4.33 works (matmul + jit + LAPA inference on RTX 5090, driver 580). 0.4.35 fails to start;
+#   0.4.36+ removed the trace level that flax 0.8 uses. Also set
+#   XLA_FLAGS=--xla_gpu_enable_triton_gemm=false (scripts/eval.py does), otherwise XLA's Triton
+#   GEMM path aborts with "LLVM ERROR: Unsupported conversion from bf16 to f16" on sm_120.
+jax[cuda12]==0.4.33
+tensorflow[and-cuda]
+scipy==1.12.0
+albumentations
+uvicorn
+fastapi
+# [5090] pins the 2023-era stack needs (unpinned resolution pulls numpy 2 / new ml_dtypes)
+numpy<2
+# [5090] sapien 2.2.2 imports pkg_resources (removed from recent setuptools)
+setuptools<70
+# [5090] gymnasium>=1.0 stops forwarding attributes through wrappers; the official evaluator
+#        calls env.get_language_instruction() / env.robot_uid on the TimeLimit-wrapped env
+gymnasium==0.29.1
+# [5090] used by SimplerEnv but not listed in its setup.py
+mediapy
+matplotlib
+# [5090] main_inference_lapa.py imports the RT-1 and Octo policy modules even for LAPA
+tensorflow_hub==0.16.1
+tf_agents==0.19.0
+tensorflow-probability==0.25.0
+typing_extensions>=4.12
+# this repo's scripts
+pyyaml
+huggingface_hub

@@ -1,6 +1,11 @@
 # Checkpoints to evaluate. Each entry: HF repo + subfolder holding streaming_params.
 # All are LAPA-7B fine-tuned on SIMPLER (Bridge) rollouts; training logs sit next to the params.
+# Paper (KSC2026 draft) conditions: E0 = e0, O (paper E1) = e2_340 / e2_340_s2, H (paper E2) = e3_340.
+# e2 / e3 are the 50-clip versions, not in the paper's main results.
 # To add a model: add one entry here, then `scripts/download.sh <name>`.
+
+# Models scripts/run_all.sh evaluates by default (the paper's conditions).
+paper_models: [e0, e2_340, e2_340_s2, e3_340]
 
 base:
   # Official LAPA release. Only tokenizer.model and vqgan are used from it

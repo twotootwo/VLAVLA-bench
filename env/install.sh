@@ -1,25 +1,22 @@
 #!/usr/bin/env bash
 # Create the evaluation environment: LAPA (JAX) + SIMPLER (SAPIEN/ManiSkill2_real2sim).
 # Follows the official LAPA README and SimplerEnv README; both live in third_party/LAPA @46aca51.
-#   bash env/install.sh            # env name: lapa
-#   ENV_NAME=foo bash env/install.sh
+#   bash env/install.sh            # creates ./.venv
 set -euo pipefail
 cd "$(dirname "$0")/.."
-ENV_NAME=${ENV_NAME:-lapa}
 
 git submodule update --init third_party/LAPA
 bash scripts/apply_patches.sh   # see patches/README.md
 
-eval "$(conda shell.bash hook)"
-conda create -n "$ENV_NAME" python=3.10 -y
-conda activate "$ENV_NAME"
-
-# LAPA model code (jax[cuda12]==0.4.23, flax, tux, tensorflow ...)
-pip install -r third_party/LAPA/requirements.txt
+# Python 3.10 venv with uv (tested on RTX 5090, driver 580, Ubuntu 24.04).
+# env/requirements-5090.txt = official LAPA requirements.txt with the changes needed for sm_120
+# (each marked [5090] with the reason).
+command -v uv >/dev/null || pip install uv
+uv venv -p 3.10 .venv
+uv pip install -p .venv/bin/python -r env/requirements-5090.txt
 # SIMPLER: ManiSkill2 real-to-sim envs, then simpler_env (both vendored inside the LAPA repo)
-pip install -e third_party/LAPA/SimplerEnv/ManiSkill2_real2sim
-pip install -e third_party/LAPA/SimplerEnv
-# this repo's scripts
-pip install pyyaml huggingface_hub
+uv pip install -p .venv/bin/python -e third_party/LAPA/SimplerEnv/ManiSkill2_real2sim \
+  -e third_party/LAPA/SimplerEnv "numpy<2" "gymnasium==0.29.1" "setuptools<70"
+uv pip freeze -p .venv/bin/python > env/freeze-$(hostname).txt
 
-echo "done. next: conda activate $ENV_NAME && python env/check_gpu.py"
+echo "done. next: source .venv/bin/activate && python env/check_gpu.py"
