@@ -1,0 +1,25 @@
+diff --git a/SimplerEnv/simpler_env/policies/lapa/lapa_model.py b/SimplerEnv/simpler_env/policies/lapa/lapa_model.py
+index 0e63eaf..f3e328d 100644
+--- a/SimplerEnv/simpler_env/policies/lapa/lapa_model.py
++++ b/SimplerEnv/simpler_env/policies/lapa/lapa_model.py
+@@ -224,3 +224,4 @@ class LAPAInference:
+         axs["image"].set_xlabel("Time in one episode (subsampled)")
+         plt.legend()
+         plt.savefig(save_path)
++        plt.close(fig)  # VLAVLA-bench patch: free the 45x10 in figure after every placement
+diff --git a/SimplerEnv/simpler_env/utils/visualization.py b/SimplerEnv/simpler_env/utils/visualization.py
+index 4e45425..08c65e7 100644
+--- a/SimplerEnv/simpler_env/utils/visualization.py
++++ b/SimplerEnv/simpler_env/utils/visualization.py
+@@ -26,6 +26,11 @@ def write_video(path, images, fps=5):
+     else:
+         images_npy = images
+     # media.write_video(path, images_npy, fps=fps)
++    # VLAVLA-bench patch: the official LAPA fork disables video writing (line above).
++    # Write with imageio (imageio[ffmpeg] is in LAPA requirements.txt and bundles its own ffmpeg,
++    # mediapy needs a system ffmpeg). Default libx264, quality 5.
++    import imageio
++    imageio.mimwrite(path, images_npy, fps=fps)
+ 
+ 
+ def plot_pred_and_gt_action_trajectory(predicted_actions, gt_actions, stacked_images):

@@ -25,7 +25,11 @@ import time
 
 from common import LAPA, RESULTS_DIR, ROOT, SIMPLER, base_dir, bridge, model_params, models
 
-PATCH_MARKER = "reseed_per_placement"
+# file (relative to SimplerEnv) -> text that only exists once the patch is applied
+PATCH_MARKERS = {
+    "simpler_env/evaluation/maniskill2_evaluator.py": "reseed_per_placement",  # 0001
+    "simpler_env/utils/visualization.py": "imageio.mimwrite",                  # 0002
+}
 
 
 def build_cmd(model, task, seed, episode_log):
@@ -118,9 +122,9 @@ def main():
     a = ap.parse_args()
 
     if not a.dry_run:
-        evaluator = SIMPLER / "simpler_env" / "evaluation" / "maniskill2_evaluator.py"
-        if PATCH_MARKER not in evaluator.read_text():
-            sys.exit("patches not applied: run scripts/apply_patches.sh")
+        for f, marker in PATCH_MARKERS.items():
+            if marker not in (SIMPLER / f).read_text():
+                sys.exit(f"patch missing in {f}: run scripts/apply_patches.sh")
         for p in (model_params(a.model), base_dir() / "tokenizer.model", base_dir() / "vqgan"):
             if not p.exists():
                 sys.exit(f"missing {p}\nrun: python scripts/download.py base {a.model}")
