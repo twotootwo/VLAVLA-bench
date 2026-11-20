@@ -5,3 +5,7 @@ results/*
 !results/summary.csv
 __pycache__/
 *.pyc
+
+# local copy of raw run outputs (exported subset is in videos/ and data/)
+results_vast/
+*.pdf
