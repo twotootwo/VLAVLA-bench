@@ -47,3 +47,9 @@ models:
   e3cb:        # H (hand) "cb" variant; uploaded 2026-11-22
     repo: capstone-vlavla/e3-cb
     subdir: e3cb
+  e2L:         # O (object) "L" variant; HF org capstone-vlavla2, uploaded 2026-11-22 (meaning of L: ask training owner)
+    repo: capstone-vlavla2/e2-L
+    subdir: e2L
+  e3L:         # H (hand) "L" variant; HF org capstone-vlavla2, uploaded 2026-11-22
+    repo: capstone-vlavla2/e3-L
+    subdir: e3L
