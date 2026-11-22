@@ -41,3 +41,9 @@ models:
   e3_340_s3:   # H (hand), 3rd training run; uploaded 2026-11-21, streaming_params only
     repo: capstone-vlavla/e3-seed3
     subdir: e3_340_s3
+  e2cb:        # O (object) "cb" variant; uploaded 2026-11-22 (meaning of cb: ask training owner)
+    repo: capstone-vlavla/e2-cb
+    subdir: e2cb
+  e3cb:        # H (hand) "cb" variant; uploaded 2026-11-22
+    repo: capstone-vlavla/e3-cb
+    subdir: e3cb
