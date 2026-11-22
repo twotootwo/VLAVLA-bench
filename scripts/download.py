@@ -23,9 +23,13 @@ def get_base():
 
 def get_model(name):
     m = models()["models"][name]
-    for f in ("streaming_params", "metadata.pkl"):
-        p = hf_hub_download(m["repo"], f"{m['subdir']}/{f}", local_dir=CKPT_DIR / name)
+    p = hf_hub_download(m["repo"], f"{m['subdir']}/streaming_params", local_dir=CKPT_DIR / name)
+    print("ok", p)
+    try:  # training metadata; not needed for evaluation and missing in some repos (e3-seed2)
+        p = hf_hub_download(m["repo"], f"{m['subdir']}/metadata.pkl", local_dir=CKPT_DIR / name)
         print("ok", p)
+    except Exception as e:  # noqa: BLE001
+        print("skip metadata.pkl:", type(e).__name__)
 
 
 def main(names):
