@@ -53,3 +53,9 @@ models:
   e3L:         # H (hand) "L" variant; HF org capstone-vlavla2, uploaded 2026-11-22
     repo: capstone-vlavla2/e3-L
     subdir: e3L
+  e3_340_s4:   # H (hand), 4th training run; HF org capstone-vlavla2, uploaded 2026-11-23
+    repo: capstone-vlavla2/e3-seed4
+    subdir: e3-seed4
+  e2_340_s4:   # O (object), 4th training run; HF org capstone-vlavla2, uploaded 2026-11-23
+    repo: capstone-vlavla2/e2-seed4
+    subdir: e2-seed4
