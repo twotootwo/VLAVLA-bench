@@ -21,9 +21,9 @@ import argparse, json, os, re, shutil
 from pathlib import Path
 
 TASKS = ["stack_cube", "carrot", "spoon", "eggplant"]
-LABEL = {"e0": "E0", "e2_340": "O-1", "e2_340_s2": "O-2", "e2_340_s3": "O-3", "e3_340": "H-1", "e3_340_s2": "H-2", "e3_340_s3": "H-3", "e2_340_s4": "O-4", "e3_340_s4": "H-4", "e2cb": "O-cb", "e3cb": "H-cb", "e2L": "O-L", "e3L": "H-L"}
-DESC = {"e0": "Stage A 없음 (기준선)", "e2_340": "물체(O), 학습 1회차", "e2_340_s2": "물체(O), 학습 2회차", "e2_340_s3": "물체(O), 학습 3회차",
-        "e3_340": "손(H), 학습 1회차", "e3_340_s2": "손(H), 학습 2회차", "e3_340_s3": "손(H), 학습 3회차", "e2_340_s4": "물체(O), 학습 4회차", "e3_340_s4": "손(H), 학습 4회차", "e2cb": "물체(O) cb 변형", "e3cb": "손(H) cb 변형", "e2L": "물체(O) L 변형", "e3L": "손(H) L 변형"}
+LABEL = {"e0": "E0", "e0_s2": "E0-2", "e0_s3": "E0-3", "e0_s4": "E0-4", "e0_s5": "E0-5", "e2_340": "O-1", "e2_340_s2": "O-2", "e2_340_s3": "O-3", "e3_340": "H-1", "e3_340_s2": "H-2", "e3_340_s3": "H-3", "e2_340_s4": "O-4", "e3_340_s4": "H-4", "e2_340_s5": "O-5", "e3_340_s5": "H-5", "e2cb": "O-cb", "e3cb": "H-cb", "e2L": "O-L", "e3L": "H-L"}
+DESC = {"e0": "Stage A 없음 (기준선)", "e0_s2": "Stage A 없음, 재학습 2회차", "e0_s3": "Stage A 없음, 재학습 3회차", "e0_s4": "Stage A 없음, 재학습 4회차", "e0_s5": "Stage A 없음, 재학습 5회차", "e2_340": "물체(O), 학습 1회차", "e2_340_s2": "물체(O), 학습 2회차", "e2_340_s3": "물체(O), 학습 3회차",
+        "e3_340": "손(H), 학습 1회차", "e3_340_s2": "손(H), 학습 2회차", "e3_340_s3": "손(H), 학습 3회차", "e2_340_s4": "물체(O), 학습 4회차", "e2_340_s5": "물체(O), 학습 5회차", "e3_340_s5": "손(H), 학습 5회차", "e3_340_s4": "손(H), 학습 4회차", "e2cb": "물체(O) cb 변형", "e3cb": "손(H) cb 변형", "e2L": "물체(O) L 변형", "e3L": "손(H) L 변형"}
 PAT = re.compile(r"^(success|failure)_obj_episode_(\d+)_")
 MARK = {"nograsp": "⚪", "grasped": "🟠", "pushed": "🔵"}
 
@@ -38,7 +38,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stage", required=True)
     ap.add_argument("--add", action="append", required=True, help="results_dir:SEED-SEED")
-    ap.add_argument("--models", default="e0,e2_340,e2_340_s2,e2_340_s3,e3_340,e3_340_s2,e3_340_s3,e2_340_s4,e3_340_s4,e2cb,e3cb,e2L,e3L")
+    ap.add_argument("--models", default="e0,e0_s2,e0_s3,e0_s4,e0_s5,e2_340,e2_340_s2,e2_340_s3,e3_340,e3_340_s2,e3_340_s3,e2_340_s4,e3_340_s4,e2_340_s5,e3_340_s5,e2cb,e3cb,e2L,e3L")
     ap.add_argument("--repo")
     ap.add_argument("--upload", action="store_true")
     ap.add_argument("--kind", choices=["failure", "success"], default="failure")

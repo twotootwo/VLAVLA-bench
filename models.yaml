@@ -59,3 +59,21 @@ models:
   e2_340_s4:   # O (object), 4th training run; HF org capstone-vlavla2, uploaded 2026-11-23
     repo: capstone-vlavla2/e2-seed4
     subdir: e2-seed4
+  e3_340_s5:   # H (hand), 5th training run; HF org capstone-vlavla2, uploaded 2026-11-24
+    repo: capstone-vlavla2/e3-seed5
+    subdir: e3-seed5
+  e2_340_s5:   # O (object), 5th training run; HF org capstone-vlavla2, uploaded 2026-11-24
+    repo: capstone-vlavla2/e2-seed5
+    subdir: e2-seed5
+  e0_s2:       # E0 (no Stage A) retrained, 2nd run; HF capstone-vlavla2/e0-seed, uploaded 2026-11-24
+    repo: capstone-vlavla2/e0-seed
+    subdir: e0-2
+  e0_s3:       # E0 (no Stage A) retrained, 3rd run; HF capstone-vlavla2/e0-seed
+    repo: capstone-vlavla2/e0-seed
+    subdir: e0-3
+  e0_s4:       # E0 (no Stage A) retrained, 4th run; HF capstone-vlavla2/e0-seed
+    repo: capstone-vlavla2/e0-seed
+    subdir: e0-4
+  e0_s5:       # E0 (no Stage A) retrained, 5th run; HF capstone-vlavla2/e0-seed
+    repo: capstone-vlavla2/e0-seed
+    subdir: e0-5
